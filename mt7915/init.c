@@ -786,6 +786,8 @@ mt7915_set_stream_he_txbf_caps(struct mt7915_dev *dev,
 
 	/* the maximum cap is 4 x 3, (Nr, Nc) = (3, 2) */
 	elem->phy_cap_info[7] |= min_t(int, nss - 1, 2) << 3;
+	// beamsense: tx_bf_dim = beamformer dimension
+	int tx_bf_dim = min_t(int, nss - 1, 2);
 
 // 	if (vif != NL80211_IFTYPE_AP)
 // 		return;
@@ -796,8 +798,9 @@ mt7915_set_stream_he_txbf_caps(struct mt7915_dev *dev,
 	/* num_snd_dim
 	 * for mt7915, max supported nss is 2 for bw > 80MHz
 	 */
+	// beamsense: modify the beamformee dimension to be the same as tx beamforming
 	c = FIELD_PREP(IEEE80211_HE_PHY_CAP5_BEAMFORMEE_NUM_SND_DIM_UNDER_80MHZ_MASK,
-		       nss - 1) |
+		       tx_bf_dim ) | // nss - 1) |
 	    FIELD_PREP(IEEE80211_HE_PHY_CAP5_BEAMFORMEE_NUM_SND_DIM_ABOVE_80MHZ_MASK,
 		       nss_160 - 1);
 	elem->phy_cap_info[5] |= c;
